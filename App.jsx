@@ -1,4 +1,5 @@
 import { useState, useMemo } from "react";
+import { createRoot } from "react-dom/client";
 
 const GOOGLE_FONTS = `@import url('https://fonts.googleapis.com/css2?family=Abril+Fatface&family=Exo+2:wght@300;400;600;700&display=swap');`;
 
@@ -86,6 +87,13 @@ const styles = `
   .card.col-fifafest     { border-left-color: #c8a000; }
   .card.col-mosscenter   { border-left-color: #7c3aed; }
   .card.col-pirate       { border-left-color: #1e3a5f; }
+  .card.col-ipaddle      { border-left-color: #0369a1; }
+  .card.col-baller       { border-left-color: #f97316; }
+  .card.col-rodeo        { border-left-color: #92400e; }
+  .card.col-polo         { border-left-color: #0d9488; }
+  .card.col-obc          { border-left-color: #16a34a; }
+  .card.col-mclaren      { border-left-color: #f97316; }
+  .card.col-crow         { border-left-color: #7f1d1d; }
   .card.col-skatebird    { border-left-color: #0ea5e9; }
   .card.col-pottery      { border-left-color: #b45309; }
   .card.col-tutifruti   { border-left-color: #d946ef; }
@@ -157,6 +165,13 @@ const SOURCE_META = {
   fifafest:          { col: "col-fifafest",   label: "⚽ FIFA Fan Festival" },
   mosscenter:        { col: "col-mosscenter", label: "🎨 Moss Center / AKI" },
   pirateaquatours:   { col: "col-pirate",    label: "🏴‍☠️ Pirate Cruise" },
+  ipaddle:           { col: "col-ipaddle",   label: "🛶 iPaddle Miami" },
+  ballerleague:      { col: "col-baller",    label: "⚽ Baller League" },
+  soulrodeo:         { col: "col-rodeo",     label: "🤠 Soul Rodeo" },
+  beachpolo:         { col: "col-polo",      label: "🏇 Beach Polo" },
+  orangeblossom:     { col: "col-obc",       label: "🏈 Orange Blossom Classic" },
+  mclaren:           { col: "col-mclaren",   label: "🧡 McLaren Racing Live" },
+  crowjiujitsu:      { col: "col-crow",      label: "🥋 Crow Jiu Jitsu" },
   skatebird:         { col: "col-skatebird", label: "🛹 SkateBird Miami" },
   potterymiami:      { col: "col-pottery",   label: "🏺 Pottery Miami" },
   tutifruti:         { col: "col-tutifruti", label: "🛹 Tutifruti" },
@@ -190,6 +205,7 @@ const SOURCE_META = {
 // Always-on static venues (hours/pricing never changes much)
 const STATIC_VENUES = [
   { id: "pirateaquatours", name: "Miami Pirate Sightseeing Cruise — Miami Aqua Tours", location: "Pier 5, Bayside Marketplace · 401 Biscayne Blvd, Miami 33132", description: "Board the pirate ship El Loro for a 1h20min cruise through Biscayne Bay past Star Island celebrity mansions, Venetian Islands, Fisher Island, and the downtown Miami skyline. Kids get pirate hats, bilingual narration (English/Spanish), music on board, restroom on board. Snacks, drinks, and souvenir photos available. Also passes filming locations from Bad Boys, Scarface, Iron Man & Fast & Furious. Book online or call 305-358-7600.", setting: "outdoor", estimatedCost: "$30/adult (13+) · $20/child (0–12)", ageRange: "All ages", ageMin: 0, ageMax: 17, emoji: "🏴‍☠️", source: "pirateaquatours", typicalHours: "Multiple departures daily — check miamiaquatours.com for times", seasonalNote: null, eventDate: null, daysOpen: [0,1,2,3,4,5,6], url: "https://miamiaquatours.com/cruises/pirate-adventure/" },
+  { id: "ipaddle", name: "iPaddle Miami — Kayak & Paddleboard on Biscayne Bay", location: "1275 NE 79th St, Miami 33138 (79th St Causeway) · Also: Chapman Field Park, South Miami", description: "One of Miami's best on-the-water experiences — kayak and paddleboard rentals, guided tours, and lessons right on Biscayne Bay. Explore calm waters, nearby islands, and often spot dolphins, manatees, rays, and turtles. Kids SUP & kayak lessons (ages 8–15, must swim); kids can ride as passengers from age 5 with an adult. Nighttime full moon tours also available. Reservation required — book at ipaddlemiami.com. Water shoes required (ramp is rocky). Bilingual (English/Spanish).", setting: "outdoor", estimatedCost: "Rentals from ~$40–$60/hr · Kids lessons — check site · Tours vary", ageRange: "Ages 5+ (passengers) · Ages 8–15 (kids lessons)", ageMin: 5, ageMax: 17, emoji: "🛶", source: "ipaddle", typicalHours: "Daily sunrise to sunset · Night tours available · Reservation required", seasonalNote: "Often spot dolphins, manatees & sea turtles on the water!", eventDate: null, daysOpen: [0,1,2,3,4,5,6], url: "https://ipaddlemiami.com/" },
   { id: "puttshack", name: "Puttshack Miami", location: "701 S Miami Ave, Level 4, Brickell City Centre", description: "High-tech mini golf with patented ball-tracking, outdoor terrace overlooking the Miami River, and a full restaurant. Kids 12 and under: $10/round or $15 all-you-can-putt Sun–Fri. 21+ after 9pm Fri & Sat.", setting: "indoor", estimatedCost: "$10–$15/child", ageRange: "All ages", ageMin: 0, ageMax: 17, emoji: "⛳", source: "puttshack", typicalHours: "Sun 11am–10pm · Mon–Thu 11am–11pm · Fri–Sat 11am–1am", seasonalNote: null, eventDate: null, daysOpen: [0,1,2,3,4,5,6], url: "https://www.puttshack.com/locations/miami/" },
   { id: "superblue", name: "Superblue Miami", location: "1101 NW 23rd St, Allapattah (near Wynwood)", description: "Over 50,000 sq ft of immersive art by teamLab, Es Devlin, and James Turrell — mirrored labyrinths, digital flower worlds, and a 3,000-bulb heartbeat installation. Kids under 3 free; Florida residents get a discount.", setting: "indoor", estimatedCost: "~$17/child · $29+ adults · Under 3 free", ageRange: "All ages (best 3+)", ageMin: 0, ageMax: 17, emoji: "🎨", source: "superblue", typicalHours: "Mon–Thu 11am–7pm · Fri–Sat 10am–8pm · Sun 10am–7pm", seasonalNote: null, eventDate: null, daysOpen: [0,1,2,3,4,5,6], url: "https://www.superblue.com/miami" },
   { id: "zoo", name: "Zoo Miami", location: "12400 SW 152nd St, South Miami", description: "2,000+ animals across 340 acres. Features animal encounters, VIP cart tours, safari cycles, and a botanical garden. Kids 2 and under free. Parking always free. $1 Kids Night select Mondays; $5 weekday summer tickets Mon–Thu.", setting: "outdoor", estimatedCost: "$21.95/child (3–12) · Under 2 free", ageRange: "All ages", ageMin: 0, ageMax: 17, emoji: "🦒", source: "zoo", typicalHours: "Daily 10am–5pm (last ticket 4pm)", seasonalNote: null, eventDate: null, daysOpen: [0,1,2,3,4,5,6], url: "https://www.zoomiami.org" },
@@ -231,12 +247,29 @@ const STATIC_VENUES = [
   { id: "goldcoastrailroad", name: "Gold Coast Railroad Museum", location: "12450 SW 152nd St, Miami (near Zoo Miami)", description: "One of Florida's three official State Railroad Museums — 40+ historic railcars on 3 miles of track, including the Presidential railcar Ferdinand Magellan (used by FDR, Truman, and Eisenhower) and a WWII-era steam locomotive. Rides available: Link train (2-ft narrow gauge, weekdays 12pm), Standard Gauge, Cab Rides, and Speeder rides. Thomas play tables, model train room, and WWII airship base exhibits. Call ahead to confirm ride availability. Military free · EBT/WIC Museums4All $3 for up to 4.", setting: "outdoor", estimatedCost: "$10/child (3–12) · $12/adult · Under 3 free · Seniors $8", ageRange: "All ages (train-lovers!)", ageMin: 0, ageMax: 17, emoji: "🚂", source: "goldcoastrailroad", typicalHours: "Wed–Fri 11am–4pm · Sat–Sun 10am–4pm · Closed Mon–Tue", seasonalNote: null, eventDate: null, daysOpen: [0,3,4,5,6], url: "https://www.goldcoastrailroadmuseum.org" },
   { id: "potterymiami", name: "Pottery Miami — Kids Pottery Classes", location: "164 NW 20th St, Miami 33127 (Wynwood) · 701 NW 2nd Ave (Edgewater)", description: "Hands-on pottery and hand-building classes for kids from age 3, taught by experienced instructors. In a 2-hour session kids shape clay into mugs, bowls, vases, and more using a potter's wheel and hand-building techniques — finished piece goes home after firing (2–3 weeks). No experience needed, no enrollment fee, no commitment. Also offers kids birthday parties and school field trips. Book at pottery-miami.com.", setting: "indoor", estimatedCost: "$90/person (hand-building); $130 with painting/glazing", ageRange: "Ages 3+", ageMin: 3, ageMax: 17, emoji: "🏺", source: "potterymiami", typicalHours: "Daily 10am–9pm, 2-hour sessions", seasonalNote: null, eventDate: null, daysOpen: [0,1,2,3,4,5,6], url: "https://pottery-miami.com/kids-pottery-classes-in-miami" },
   { id: "skatebird", name: "SkateBird Miami", location: "533 NE 83rd St, Miami 33138 (Upper Eastside / El Portal)", description: "32,000 sq ft skatepark complex featuring a covered 12,000 sq ft skate plaza and an outdoor 18,000 sq ft pump track — built to handle rain and open late. Classes, private lessons, and seasonal skate camps for all skill levels. Beyond skating: DJ Academy, gaming lounge, food (pizza, burgers, Mediterranean), skate shop, and regular community events. Rentals available (skateboards, scooters, pads). Also the host venue for Tutifruti's Falling Frut workshop on Apr 17. Monday is FREE SKATE day.", setting: "outdoor", estimatedCost: "$10 entry / $8 rentals; FREE Mondays. Lessons from $25 trial class", ageRange: "All ages", ageMin: 3, ageMax: 17, emoji: "🛹", source: "skatebird", typicalHours: "Mon–Fri 12–8pm · Sat 10am–6pm · Sun 10am–7pm", seasonalNote: "Spring, Summer & Winter skate camps available — book at active.com/orgs/skatebird-miami", eventDate: null, daysOpen: [0,1,2,3,4,5,6], url: "https://www.skatebirdmiami.com" },
+  { id: "crowjiujitsu", name: "Crow Jiu Jitsu — Kids & Youth Classes", location: "South Miami: 5958 S Dixie Hwy · Pinecrest: crowjiujitsu.com/pinecrest", description: "Brazilian jiu-jitsu academy with dedicated kids and youth programs at two South Miami-area locations. Toddlers (ages 3–5) and Kids (ages 6–9) classes build self-confidence, discipline, social skills, and foundational BJJ technique. Youth program (ages 10+) adds coordination, movement, and self-defense. Private lessons also available. Free trial class — book online at crowjiujitsu.com.", setting: "indoor", estimatedCost: "Free trial class · Membership pricing — contact academy", ageRange: "Ages 3+", ageMin: 3, ageMax: 17, emoji: "🥋", source: "crowjiujitsu", typicalHours: "Check crowjiujitsu.com for class schedule by location", seasonalNote: "Free trial class available — no commitment needed to try it!", eventDate: null, daysOpen: [0,1,2,3,4,5,6], url: "https://www.crowjiujitsu.com/programs" },
   // Tutifruti
   { id: "tutifruti", name: "Tutifruti — Movement & Art Workshops", location: "Various locations across Miami-Dade, Broward & Palm Beach", description: "South Florida nonprofit bringing low-cost, inclusive movement and creative art workshops to communities across the region. Programs include skateboarding, yoga, art workshops (screenprinting, bookmaking, block printing, fingerboard-making), and mental health discussions. Welcoming to all — especially women, girls, BIPOC, and LGBTQ+ youth. Check Instagram @tutifruti.fl for upcoming workshops.", setting: "outdoor", estimatedCost: "Low cost or free", ageRange: "Ages 5+", ageMin: 5, ageMax: 17, emoji: "🛹", source: "tutifruti", typicalHours: "Varies by event — check tutifruti-fl.org", seasonalNote: null, eventDate: null, daysOpen: [0,1,2,3,4,5,6], url: "https://www.tutifruti-fl.org" },
   { id: "tutifruti-falling-frut", name: "Tutifruti: Falling Frut Workshop @ Skatebird Miami", location: "Skatebird Miami (check miamiandbeaches.com for exact address)", description: "A movement and poetry workshop led by Tutifruti reimagining the skatepark as a space for guided physical practice and creative reflection. Participants move through the space, explore a falling clinic (without gear), observe their physical and emotional responses, then write poetry. Part of the O, Miami Poetry Festival. Ages 5+, parental supervision for younger kids.", setting: "outdoor", estimatedCost: "Free or low cost — check site", ageRange: "Ages 5+", ageMin: 5, ageMax: 17, emoji: "🛹", source: "tutifruti", typicalHours: "Friday April 17", seasonalNote: "Part of the O, Miami Poetry Festival — combining skateboarding, falling, and poetry!", eventDate: "Fri Apr 17, 2026", daysOpen: [5], url: "https://www.tutifruti-fl.org" },
   { id: "pottery-miami", name: "Pottery Studio Miami — Kids Classes", location: "164 NW 20th St, Miami, FL 33127 (Wynwood / Edgewater area)", description: "Daily pottery, hand-building, and painting classes for kids and families in a drop-in-friendly studio near Wynwood. No experience needed, no membership required. Classes run 2 hours with an instructor guiding every step. Kids take home a finished piece after firing (2–3 weeks). Mommy & Me (ages 3–5): $90 total for parent + child. Kids Ceramics (ages 6–10): $90/person (hand-building + 1 firing) or $130 with painting, glazing + 2 firings. Teens same pricing. Private family groups up to 20 people ($100/person, $500 min).", setting: "indoor", estimatedCost: "$90 total Mommy & Me (3–5) · $90/person kids (6–10) · $130 with painting", ageRange: "Ages 3+", ageMin: 3, ageMax: 17, emoji: "🏺", source: "pottery-miami", typicalHours: "Mon–Fri 12–10pm · Sat–Sun 10am–10pm · Classes every 2 hrs, book online", seasonalNote: null, eventDate: null, daysOpen: [0,1,2,3,4,5,6], url: "https://pottery-miami.com/kids-pottery-classes-in-miami" },
   { id: "aki-festival-2026", name: "AKI Family Arts Festival 2026 — All Kids Included", location: "Dennis C. Moss Cultural Arts Center · 9901 SW 186th St, Cutler Bay 33157", description: "The 20th annual All Kids Included (AKI) Family Arts Festival — a free, fully inclusive day of creativity and community for children of all abilities and their families. Features live music and theater performances, hands-on arts activities, a rock-climbing wall, outdoor games, and community resource tables. Full accessibility accommodations: Braille, sighted guides, audio description, sensory-inclusive programs, and shadow-interpreted theatre. Presented by Miami-Dade County Department of Cultural Affairs.", setting: "outdoor", estimatedCost: "Free", ageRange: "All ages", ageMin: 0, ageMax: 17, emoji: "🎨", source: "mosscenter", typicalHours: "Sat May 2 · 10am (check mosscenter.org for exact hours)", seasonalNote: "Fully sensory-inclusive and accessibility-forward — great for kids with and without disabilities.", eventDate: "Sat May 2, 2026", daysOpen: [6], url: "https://www.mosscenter.org/mc/eventDetail.page?id=379" },
   { id: "fifa-fan-festival", name: "FIFA Fan Festival™ Miami — Bayfront Park", location: "Bayfront Park, 301 Biscayne Blvd, Downtown Miami", description: "The official FIFA World Cup 26™ Fan Festival — free and open to everyone, no match ticket needed. Set on Biscayne Bay at Bayfront Park, the festival features live match broadcasts on big screens, entertainment, cultural performances, food, games, and interactive fan experiences. Miami's 2026 World Cup matches are played nearby at Hard Rock Stadium. A once-in-a-generation event for soccer-loving families.", setting: "outdoor", estimatedCost: "Free entry", ageRange: "All ages", ageMin: 0, ageMax: 17, emoji: "🏆", source: "fifafest", typicalHours: "Jun 13 – Jul 5 · Daily hours TBA — check miamifwc26.com/fan-festival", seasonalNote: "Free! No match ticket needed. Miami hosts World Cup matches Jun–Jul 2026 — the Fan Festival is for everyone.", eventDate: "Jun 13 – Jul 5, 2026", daysOpen: [0,1,2,3,4,5,6], url: "https://miamifwc26.com/fan-festival/" },
+  // Baller League (weekly Thursdays Apr-May at Tropical Park)
+  { id: "ballerleague-apr16", name: "⚽ Baller League USA — Matchday 5", location: "Baller League Arena, Tropical Park · 7900 SW 40th St, Miami 33155", description: "High-speed 6v6 indoor soccer with celebrity-managed teams including Ronaldinho, Usain Bolt, iShowSpeed, Odell Beckham Jr., J Balvin, and Druski. 5 matches per night, gates open 4:30pm, matches 5:15–10pm. Loud, fast, and built for the digital generation — scored on CBS Sports Golazo Network.", setting: "indoor", estimatedCost: "Tickets from ~$25 — check feverup.com", ageRange: "All ages", ageMin: 0, ageMax: 17, emoji: "⚽", source: "ballerleague", typicalHours: "Gates 4:30pm · Matches 5:15–10:00pm", seasonalNote: "Ronaldinho, Usain Bolt, iShowSpeed, OBJ & more manage teams!", eventDate: "Thu Apr 16, 2026", daysOpen: [4], url: "https://ballerleague.us/en" },
+  { id: "ballerleague-apr23", name: "⚽ Baller League USA — Matchday 6", location: "Baller League Arena, Tropical Park · 7900 SW 40th St, Miami 33155", description: "High-speed 6v6 indoor soccer. 5 matches per night featuring all 10 celebrity-managed teams. Gates 4:30pm, matches 5:15–10pm.", setting: "indoor", estimatedCost: "Tickets from ~$25 — check feverup.com", ageRange: "All ages", ageMin: 0, ageMax: 17, emoji: "⚽", source: "ballerleague", typicalHours: "Gates 4:30pm · Matches 5:15–10:00pm", seasonalNote: null, eventDate: "Thu Apr 23, 2026", daysOpen: [4], url: "https://ballerleague.us/en" },
+  { id: "ballerleague-apr30", name: "⚽ Baller League USA — Matchday 7", location: "Baller League Arena, Tropical Park · 7900 SW 40th St, Miami 33155", description: "High-speed 6v6 indoor soccer. 5 matches per night featuring all 10 celebrity-managed teams. Gates 4:30pm, matches 5:15–10pm.", setting: "indoor", estimatedCost: "Tickets from ~$25 — check feverup.com", ageRange: "All ages", ageMin: 0, ageMax: 17, emoji: "⚽", source: "ballerleague", typicalHours: "Gates 4:30pm · Matches 5:15–10:00pm", seasonalNote: null, eventDate: "Thu Apr 30, 2026", daysOpen: [4], url: "https://ballerleague.us/en" },
+  { id: "ballerleague-may7", name: "⚽ Baller League USA — Matchday 8", location: "Baller League Arena, Tropical Park · 7900 SW 40th St, Miami 33155", description: "High-speed 6v6 indoor soccer. 5 matches per night featuring all 10 celebrity-managed teams. Gates 4:30pm, matches 5:15–10pm.", setting: "indoor", estimatedCost: "Tickets from ~$25 — check feverup.com", ageRange: "All ages", ageMin: 0, ageMax: 17, emoji: "⚽", source: "ballerleague", typicalHours: "Gates 4:30pm · Matches 5:15–10:00pm", seasonalNote: null, eventDate: "Thu May 7, 2026", daysOpen: [4], url: "https://ballerleague.us/en" },
+  { id: "ballerleague-may14", name: "⚽ Baller League USA — Matchday 9", location: "Baller League Arena, Tropical Park · 7900 SW 40th St, Miami 33155", description: "High-speed 6v6 indoor soccer. 5 matches per night featuring all 10 celebrity-managed teams. Gates 4:30pm, matches 5:15–10pm.", setting: "indoor", estimatedCost: "Tickets from ~$25 — check feverup.com", ageRange: "All ages", ageMin: 0, ageMax: 17, emoji: "⚽", source: "ballerleague", typicalHours: "Gates 4:30pm · Matches 5:15–10:00pm", seasonalNote: "Final regular season matchday before playoffs!", eventDate: "Thu May 14, 2026", daysOpen: [4], url: "https://ballerleague.us/en" },
+  // GOOOOO Miami — World Cup watch party
+  { id: "gooooo-miami", name: "GOOOOO, Miami! — World Cup Watch Party Festival", location: "Check eventbrite.com for exact venue", description: "A World Cup celebration event in Miami featuring live match watching, entertainment, food, and festivities. Part of Miami's FIFA World Cup 2026 season of events.", setting: "outdoor", estimatedCost: "Check eventbrite.com for ticket price", ageRange: "All ages", ageMin: 0, ageMax: 17, emoji: "🌍", source: "fifafest", typicalHours: "Sat Apr 18 · 12pm–3pm", seasonalNote: "Part of Miami's World Cup 2026 celebration season!", eventDate: "Sat Apr 18, 2026", daysOpen: [6], url: "https://www.eventbrite.com/e/gooooo-miami-tickets-1986048489495" },
+  // McLaren Racing Live
+  { id: "mclaren-racing-live", name: "McLaren Racing Live: Miami — Free F1 Fan Experience", location: "Regatta Harbour, Miami · (Apr 29 – May 3)", description: "McLaren's biggest-ever fan event in the US, celebrating their 1,000th Grand Prix milestone. Free to attend at Regatta Harbour across 5 days during F1 race weekend. Features historic McLaren race cars, the 2025 Constructors' Trophy, race simulators, artwork, giant live screens showing every F1 session, and immersive partner activations. Great for kids who love racing — no circuit ticket needed.", setting: "outdoor", estimatedCost: "Free entry", ageRange: "All ages", ageMin: 0, ageMax: 17, emoji: "🧡", source: "mclaren", typicalHours: "Wed Apr 29 – Sun May 3 · Hours TBA closer to event", seasonalNote: "Free! McLaren celebrates their 1,000th Grand Prix — historic milestone.", eventDate: "Apr 29 – May 3, 2026", daysOpen: [0,3,4,5,6], url: "https://www.mclaren.com/racing/mclaren-racing-live-miami/" },
+  // Soul Rodeo
+  { id: "soul-rodeo-homestead", name: "South Florida Soul Rodeo — Homestead", location: "Harris Field Doc De Milly Rodeo Grounds, Homestead, FL", description: "A community celebration blending Southern-style rodeo competition with live music, food, and family fun. Features bull riding, ladies barrel racing, ranch bronc riding, chute dogging, and junior barrel racing. Hosted by T.D.O.G.G.'s Bigg Dreams Charity with a community-oriented twist. Sponsored by 99 JAMZ.", setting: "outdoor", estimatedCost: "Tickets from ~$25 — check eventbrite.com", ageRange: "All ages", ageMin: 0, ageMax: 17, emoji: "🤠", source: "soulrodeo", typicalHours: "Sat May 9 · 5:00–10:00pm", seasonalNote: "Live music, food trucks, bull riding & barrel racing — something for everyone!", eventDate: "Sat May 9, 2026", daysOpen: [6], url: "https://www.eventbrite.com/e/south-florida-soul-rodeo-homestead-tickets-1816638678189" },
+  // Miami Beach Polo World Cup
+  { id: "miami-beach-polo", name: "Miami Beach Polo World Cup 2026 — Free to Watch!", location: "Collins Park Beach, 21st–22nd St & Collins Ave, Miami Beach", description: "The world's largest beach polo event returns to the sands of Miami Beach. 8 international teams, 120+ horses, and 3 days of thrilling matches right on the Atlantic Ocean. General admission is completely free — just walk up to the padded barrier and watch. VIP and lounge tickets also available. Celebrity appearances, après polo parties at The Setai, and a vibrant social scene all weekend.", setting: "outdoor", estimatedCost: "Free general admission · VIP lounge from ~$88/day", ageRange: "All ages", ageMin: 0, ageMax: 17, emoji: "🏇", source: "beachpolo", typicalHours: "Thu Nov 12 – Sun Nov 15 · Matches from 1pm daily", seasonalNote: "Free to watch on the beach! One of the most spectacular free spectator events in Miami.", eventDate: "Nov 12 – 15, 2026", daysOpen: [4,5,6,0], url: "https://miamibeachpolo.com/" },
+  // Orange Blossom Classic
+  { id: "orange-blossom-classic", name: "Orange Blossom Classic 2026 — HBCU Football at Hard Rock", location: "Hard Rock Stadium, 347 Don Shula Dr, Miami Gardens", description: "The 52nd Orange Blossom Classic — one of HBCU football's most iconic events — returns to Hard Rock Stadium on Labor Day weekend. South Carolina State Bulldogs (defending HBCU national champions) vs. Florida A&M Rattlers. Full week of cultural events, halftime band showcase, community programs, and pregame festivities. One of the most electric atmospheres in college football.", setting: "outdoor", estimatedCost: "Tickets from ~$30+ — check ticketmaster.com", ageRange: "All ages", ageMin: 0, ageMax: 17, emoji: "🏈", source: "orangeblossom", typicalHours: "Sun Sep 6 · 1:00pm kickoff", seasonalNote: "HBCU football's biggest stage — defending national champs SCSU vs. FAMU!", eventDate: "Sun Sep 6, 2026", daysOpen: [0], url: "https://www.orangeblossomclassic.com/" },
   // Coral Gables City Events
   { id: "cg-parents-night-out", name: "Parents Night Out", location: "Coral Gables Country Club, Coral Gables", description: "Drop the kids off for a supervised evening of activities at the Country Club while you enjoy a night out. Organized by the City of Coral Gables Recreation department.", setting: "indoor", estimatedCost: "Check site for registration fee", ageRange: "Kids (check age range)", ageMin: 4, ageMax: 12, emoji: "🌙", source: "coralgables", typicalHours: "Evening — check site for exact time", seasonalNote: null, eventDate: "Fri Apr 17, 2026", daysOpen: [5], url: "https://www.coralgables.com/events/parents-night-out" },
   { id: "cg-plogging", name: "Plogging at Chapman/Matheson", location: "Chapman Field / Matheson Hammock, Coral Gables area", description: "Plogging = jogging + picking up litter! Join Keep Coral Gables Beautiful for an active, eco-friendly morning run/walk while cleaning up the park. Great for active families and kids who love the outdoors.", setting: "outdoor", estimatedCost: "Free", ageRange: "All ages", ageMin: 0, ageMax: 17, emoji: "🏃", source: "coralgables", typicalHours: "8:30am", seasonalNote: null, eventDate: "Sat Apr 18, 2026", daysOpen: [6], url: "https://www.coralgables.com/events/plogging-chapman" },
@@ -303,6 +336,7 @@ const STATIC_VENUES = [
   { id: "marlins-jun24", name: "Marlins vs. Texas Rangers (Wed)", location: "loanDepot Park, 501 Marlins Way, Little Havana, Miami", description: "Miami Marlins home game at loanDepot Park vs. the Texas Rangers. 4-for-$44 Wednesday bundle often available — check mlb.com/marlins. Air-conditioned retractable roof stadium — great for South Florida afternoons.", setting: "outdoor", estimatedCost: "4-for-$44 Wednesday bundle — check site", ageRange: "All ages", ageMin: 0, ageMax: 17, emoji: "⚾", source: "marlins", typicalHours: "12:10 PM", seasonalNote: null, eventDate: "Wed Jun 24, 2026", daysOpen: [3], url: "https://www.mlb.com/marlins/tickets" },
 
   { id: "kidstrong", name: "KidStrong Kendall", location: "13550 SW 120th St, Suite 504, Kendall, Miami", description: "Science-based kids training program with 45-minute weekly classes focused on physical, mental, and character development for kids walking through age 11. Classes run Mon–Thu afternoons (4:15–7:15pm) and Sat–Sun mornings (9:15am–1:15pm). Membership required — first class free trial available. Great for building confidence, athleticism, and social skills.", setting: "indoor", estimatedCost: "Membership required · Free trial class available", ageRange: "Walking – Age 11", ageMin: 0, ageMax: 11, emoji: "💪", source: "kidstrong", typicalHours: "Mon–Thu 4:15–7:15pm · Sat–Sun 9:15am–1:15pm · Fri closed", seasonalNote: null, eventDate: null, daysOpen: [0,1,2,3,4,6], url: "https://www.kidstrong.com/locations/kendall" },
+  { id: "f1-miami-race", name: "🏎️ F1 Miami Grand Prix 2026 — Race Weekend", location: "Hard Rock Stadium, 347 Don Shula Dr, Miami Gardens", description: "Formula 1 returns to Miami for the 2026 Miami Grand Prix — Round 4 of the FIA Formula 1 World Championship. The full weekend includes practice sessions, qualifying, and the main race on Sunday May 3. Circuit surrounds Hard Rock Stadium. Tickets required for circuit access — various grandstands and general admission options available. Combine with the free Fan Fest at Miami Beach (Apr 29 – May 3) for the full experience without a circuit ticket.", setting: "outdoor", estimatedCost: "Tickets from ~$200+ — check tickets.formula1.com", ageRange: "All ages", ageMin: 0, ageMax: 17, emoji: "🏎️", source: "f1", typicalHours: "Fri May 1: Practice · Sat May 2: Qualifying · Sun May 3: Race (time TBC)", seasonalNote: "🏁 Round 4 of the 2026 F1 World Championship — right here in Miami!", eventDate: "May 1 – 3, 2026", daysOpen: [5,6,0], url: "https://www.formula1.com/en/racing/2026/miami" },
   { id: "f1-fanfest", name: "F1 Miami Grand Prix — Fan Fest", location: "Lummus Park, Miami Beach (oceanfront)", description: "The first-ever official F1 Miami Grand Prix Fan Fest transforms Lummus Park on Miami Beach into a free, five-day celebration. Expect F1 personalities, DJ sets, live stage moments, fan competitions, food and drinks, and immersive racing experiences. FREE to attend — reserve tickets at f1miamigp.com.", setting: "outdoor", estimatedCost: "FREE (register online)", ageRange: "All ages", ageMin: 0, ageMax: 17, emoji: "🏎️", source: "f1", typicalHours: "Wed Apr 29 & Thu Apr 30: 2–6pm · Fri May 1 – Sun May 3: Noon–6pm", seasonalNote: "Historic first-ever official Fan Fest! Perfect family intro to F1 race week without circuit ticket prices.", eventDate: "Apr 29 – May 3, 2026", daysOpen: [0,3,4,5,6], url: "https://f1miamigp.com/fan-fest/" },
   { id: "mchm", name: "Miami Children's Museum", location: "980 MacArthur Causeway, Watson Island, Miami", description: "Hands-on, imaginative exhibits across 56,000 sq ft designed for kids up to age 12 — including a new Playful Putters indoor mini golf exhibit. Features recurring programs: Mini Mondays (infants/toddlers), Sensory Friendly Saturdays, Fit Fridays, and Baby STEAM. Florida residents get $18 admission; Bank of America cardholders get one free ticket the first weekend of each month.", setting: "indoor", estimatedCost: "$26 general · $18 FL residents · Members free", ageRange: "Ages 0–12", ageMin: 0, ageMax: 12, emoji: "🧒", source: "mchm", typicalHours: "Daily 10am–6pm", seasonalNote: null, eventDate: null, daysOpen: [0,1,2,3,4,5,6], url: "https://www.miamichildrensmuseum.org/" },
 ];
@@ -507,7 +541,7 @@ function getDateInfo(dateStr) {
 }
 
 async function callClaude(prompt) {
-  const res = await fetch("https://api.anthropic.com/v1/messages", {
+  const res = await fetch("/api/messages", {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({
@@ -530,7 +564,7 @@ async function fetchGeneralAI(dateInfo) {
     : "No specific date.";
   const prompt = "You are a Miami family activity expert. Suggest 4 REAL specific kid-friendly activities in Miami for families. " + dateText + " Do NOT include Zoo Miami, Frost Science, Fairchild, Bird Bowl, Puttshack, Superblue, Pinecrest Gardens, Miami Marlins, UM Baseball, Inter Miami CF, The Berry Farm, or Tinez Farms — those are covered separately. Return JSON array only, include pricing and age info on the cards:\n[{\"name\":string,\"location\":string,\"description\":string,\"setting\":\"indoor\"|\"outdoor\",\"estimatedCost\":string,\"ageRange\":string,\"emoji\":string,\"typicalHours\":string,\"eventDate\":null,\"seasonalNote\":string|null,\"url\":string|null}]";
 
-  const res = await fetch("https://api.anthropic.com/v1/messages", {
+  const res = await fetch("/api/messages", {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({
@@ -544,6 +578,101 @@ async function fetchGeneralAI(dateInfo) {
   const match = text.replace(/```json|```/g, "").match(/\[[\s\S]*\]/);
   if (!match) return [];
   try { return JSON.parse(match[0]).map(r => ({ ...r, source: "ai" })); } catch { return []; }
+}
+
+
+// ─── Coming Up in Miami ──────────────────────────────────────────────────────
+
+const COMING_UP = [
+  // Inter Miami home games
+  { date: "2026-04-11", emoji: "⚽", name: "Inter Miami vs NY Red Bulls", detail: "Nu Stadium · 7:30pm", url: "https://www.intermiamicf.com/schedule/matches" },
+  { date: "2026-04-25", emoji: "⚽", name: "Inter Miami vs NE Revolution", detail: "Nu Stadium · 7:30pm", url: "https://www.intermiamicf.com/schedule/matches" },
+  { date: "2026-05-02", emoji: "⚽", name: "Inter Miami vs Orlando City SC", detail: "Nu Stadium · 7:00pm (on FS1)", url: "https://www.intermiamicf.com/schedule/matches" },
+  { date: "2026-05-17", emoji: "⚽", name: "Inter Miami vs Portland Timbers", detail: "Nu Stadium · 6:00pm", url: "https://www.intermiamicf.com/schedule/matches" },
+  { date: "2026-05-24", emoji: "⚽", name: "Inter Miami vs Philadelphia Union", detail: "Nu Stadium · (last game before World Cup break, on FOX)", url: "https://www.intermiamicf.com/schedule/matches" },
+  // Marlins (next few)
+  { date: "2026-04-16", emoji: "⚽", name: "Baller League — Matchday 5", detail: "Tropical Park · Gates 4:30pm, matches 5:15pm", url: "https://ballerleague.us/en" },
+  { date: "2026-04-17", emoji: "⚾", name: "Marlins vs Milwaukee Brewers", detail: "loanDepot Park · 7:10pm", url: "https://www.mlb.com/marlins/tickets" },
+  { date: "2026-04-18", emoji: "⚾", name: "Marlins vs Milwaukee Brewers", detail: "loanDepot Park · 4:10pm", url: "https://www.mlb.com/marlins/tickets" },
+  { date: "2026-04-19", emoji: "⚾", name: "Marlins vs Milwaukee Brewers", detail: "loanDepot Park · 1:40pm 🎁 Basketball Jersey giveaway", url: "https://www.mlb.com/marlins/tickets" },
+  { date: "2026-04-20", emoji: "⚾", name: "Marlins vs St. Louis Cardinals", detail: "loanDepot Park · 6:40pm", url: "https://www.mlb.com/marlins/tickets" },
+  { date: "2026-04-21", emoji: "⚾", name: "Marlins vs St. Louis Cardinals", detail: "loanDepot Park · 6:40pm", url: "https://www.mlb.com/marlins/tickets" },
+  { date: "2026-04-22", emoji: "⚾", name: "Marlins vs St. Louis Cardinals", detail: "loanDepot Park · 12:10pm", url: "https://www.mlb.com/marlins/tickets" },
+  // F1
+  { date: "2026-04-29", emoji: "🧡", name: "McLaren Racing Live: Miami opens", detail: "Regatta Harbour · Free (Apr 29 – May 3)", url: "https://www.mclaren.com/racing/mclaren-racing-live-miami/" },
+  { date: "2026-04-29", emoji: "🏎️", name: "F1 Fan Fest begins", detail: "Lummus Park, Miami Beach · Free (Apr 29 – May 3)", url: "https://f1miamigp.com/fan-fest/" },
+  { date: "2026-05-01", emoji: "🏎️", name: "F1 Miami Grand Prix Weekend", detail: "Hard Rock Stadium · Practice (May 1–3)", url: "https://www.formula1.com/en/racing/2026/miami" },
+  { date: "2026-05-02", emoji: "🎨", name: "AKI Family Arts Festival", detail: "Moss Center, Cutler Bay · Free · All-abilities inclusive", url: "https://www.mosscenter.org/mc/eventDetail.page?id=379" },
+  // World Cup fan fest & matches
+  { date: "2026-06-13", emoji: "🌍", name: "FIFA Fan Festival opens", detail: "Bayfront Park · Free (Jun 13 – Jul 5)", url: "https://miamifwc26.com/fan-festival/" },
+  { date: "2026-06-15", emoji: "🏆", name: "World Cup: Saudi Arabia vs Uruguay", detail: "Hard Rock Stadium · 6pm", url: "https://miamifwc26.com/match-schedule/" },
+  { date: "2026-06-21", emoji: "🏆", name: "World Cup: Uruguay vs Cape Verde", detail: "Hard Rock Stadium · 6pm", url: "https://miamifwc26.com/match-schedule/" },
+  { date: "2026-06-24", emoji: "🏆", name: "World Cup: Scotland vs Brazil 🇧🇷", detail: "Hard Rock Stadium · 6pm", url: "https://miamifwc26.com/match-schedule/" },
+  { date: "2026-06-27", emoji: "🏆", name: "World Cup: Colombia vs Portugal 🇵🇹", detail: "Hard Rock Stadium · 7:30pm", url: "https://miamifwc26.com/match-schedule/" },
+  { date: "2026-07-03", emoji: "🏆", name: "World Cup: Round of 32 match", detail: "Hard Rock Stadium · 6pm", url: "https://miamifwc26.com/match-schedule/" },
+  { date: "2026-07-11", emoji: "🏆", name: "World Cup: Quarterfinal", detail: "Hard Rock Stadium", url: "https://miamifwc26.com/match-schedule/" },
+  { date: "2026-05-09", emoji: "🤠", name: "Soul Rodeo — Homestead", detail: "Harris Field Grounds, Homestead · 5–10pm", url: "https://www.eventbrite.com/e/south-florida-soul-rodeo-homestead-tickets-1816638678189" },
+  { date: "2026-07-18", emoji: "🏆", name: "World Cup: Bronze Final (3rd place)", detail: "Hard Rock Stadium · 5pm", url: "https://miamifwc26.com/match-schedule/" },
+  // NASCAR
+  { date: "2026-09-06", emoji: "🏈", name: "Orange Blossom Classic", detail: "Hard Rock Stadium · 1pm · SCSU vs FAMU (HBCU football)", url: "https://www.orangeblossomclassic.com/" },
+  { date: "2026-11-12", emoji: "🏇", name: "Miami Beach Polo World Cup", detail: "Collins Park Beach, South Beach · Free to watch! (Nov 12–15)", url: "https://miamibeachpolo.com/" },
+  { date: "2026-11-06", emoji: "🏁", name: "NASCAR Championship Weekend", detail: "Homestead-Miami Speedway (Nov 6–8)", url: "https://www.homesteadmiamispeedway.com/calendar/" },
+];
+
+function ComingUpCard() {
+  const today = new Date();
+  today.setHours(0,0,0,0);
+  const upcoming = COMING_UP
+    .filter(e => new Date(e.date + "T00:00:00") >= today)
+    .sort((a,b) => a.date.localeCompare(b.date))
+    .slice(0, 12);
+
+  if (upcoming.length === 0) return null;
+
+  const fmtDate = (d) => {
+    const dt = new Date(d + "T12:00:00");
+    return dt.toLocaleDateString("en-US", { weekday: "short", month: "short", day: "numeric" });
+  };
+
+  const daysUntil = (d) => {
+    const diff = new Date(d + "T00:00:00") - today;
+    const days = Math.round(diff / 86400000);
+    if (days === 0) return "Today";
+    if (days === 1) return "Tomorrow";
+    if (days < 7) return "This week";
+    if (days < 14) return "Next week";
+    return Math.round(diff / (86400000 * 30)) < 2 ? "This month" : null;
+  };
+
+  return (
+    <div style={{maxWidth:"720px",margin:"24px auto 0",padding:"0 24px"}}>
+      <div style={{background:"linear-gradient(135deg,rgba(13,21,53,0.98) 0%,rgba(7,9,26,1) 100%)",border:"1px solid rgba(255,45,120,0.25)",borderLeft:"3px solid #ff2d78",borderRadius:"16px",padding:"20px",animation:"fadeUp 0.35s ease both"}}>
+        <div style={{display:"flex",alignItems:"center",gap:"10px",marginBottom:"16px"}}>
+          <span style={{fontSize:"18px"}}>🗓️</span>
+          <span style={{fontFamily:"'Abril Fatface',serif",fontSize:"17px",color:"#fff"}}>Coming Up in Miami</span>
+          <span style={{fontSize:"11px",color:"rgba(255,45,120,0.7)",fontWeight:700,letterSpacing:"0.1em",textTransform:"uppercase",marginLeft:"auto"}}>Next {upcoming.length} events</span>
+        </div>
+        <div style={{display:"flex",flexDirection:"column",gap:"2px"}}>
+          {upcoming.map((e,i) => {
+            const badge = daysUntil(e.date);
+            return (
+              <a key={i} href={e.url} target="_blank" rel="noopener noreferrer" style={{display:"flex",alignItems:"flex-start",gap:"12px",padding:"9px 10px",borderRadius:"10px",textDecoration:"none",transition:"background 0.15s",background:"transparent"}}
+                onMouseEnter={ev=>ev.currentTarget.style.background="rgba(255,45,120,0.07)"}
+                onMouseLeave={ev=>ev.currentTarget.style.background="transparent"}>
+                <span style={{fontSize:"18px",flexShrink:0,marginTop:"1px"}}>{e.emoji}</span>
+                <div style={{flex:1,minWidth:0}}>
+                  <div style={{fontSize:"13.5px",fontWeight:600,color:"#fff",lineHeight:1.3}}>{e.name}
+                    {badge && <span style={{marginLeft:"8px",fontSize:"10px",fontWeight:700,letterSpacing:"0.08em",color:"#ff2d78",background:"rgba(255,45,120,0.12)",border:"1px solid rgba(255,45,120,0.25)",borderRadius:"4px",padding:"1px 5px",textTransform:"uppercase"}}>{badge}</span>}
+                  </div>
+                  <div style={{fontSize:"11.5px",color:"rgba(180,210,255,0.5)",marginTop:"2px"}}>{fmtDate(e.date)} · {e.detail}</div>
+                </div>
+              </a>
+            );
+          })}
+        </div>
+      </div>
+    </div>
+  );
 }
 
 // ─── Main App ────────────────────────────────────────────────────────────────
@@ -705,6 +834,8 @@ export default function App() {
         )}
 
         {/* Single live search status card */}
+        <ComingUpCard />
+
         {searched && isLoading && (
           <div className="loading-streams">
             <div className="stream-item">
@@ -731,8 +862,8 @@ export default function App() {
           )}
 
           {(() => {
-            const datedStatic = staticResults.filter(a => a.eventDate);
-            const alwaysStatic = staticResults.filter(a => !a.eventDate);
+            const datedStatic = staticResults.filter(a => a.eventDate || (a.daysOpen && a.daysOpen.length <= 2));
+            const alwaysStatic = staticResults.filter(a => !a.eventDate && (!a.daysOpen || a.daysOpen.length > 2));
             return (
               <>
                 {datedStatic.length > 0 && (
@@ -805,5 +936,4 @@ function ActivityCard({ activity, delay = 0 }) {
   );
 }
 
-import { createRoot } from "react-dom/client";
 createRoot(document.getElementById("root")).render(<App />);
