@@ -333,7 +333,7 @@ const LIVE_SOURCES = [
     key: "play-pinecrest",
     label: "🌿 Pinecrest Gardens",
     prompt: (dateCtx) =>
-      `Search pinecrestgardens.org/Events-directory for special upcoming children's and family EVENTS. ${dateCtx} Only return ticketed or scheduled special events — do NOT return permanent daily attractions like the petting zoo, butterfly garden, splash pad, playgrounds, or general admission. Only return events that are date-specific and would not be there on a random day. Return up to 3 as a JSON array only:\n[{"name":string,"location":string,"description":string,"setting":"indoor"|"outdoor","estimatedCost":string,"ageRange":string,"emoji":string,"typicalHours":string,"eventDate":string|null,"seasonalNote":string|null,"url":string|null}]`,
+      `Search pinecrestgardens.org/Events-directory and pinecrestgardens.org/Arts-Events for upcoming family events and programs at Pinecrest Gardens. ${dateCtx} Include: ticketed concerts (Jazz series, Nu Deco, Tropical Nights), family shows, Space Night, Spring Garden Day, art exhibitions, Farmers Market, family movie nights, and any scheduled programs. Do NOT return generic "visit the gardens" entries — only named events with a specific date or schedule. Return up to 3 as a JSON array only:\n[{"name":string,"location":"Pinecrest Gardens, 11000 Red Rd, Pinecrest","description":string,"setting":"outdoor","estimatedCost":string,"ageRange":string,"emoji":string,"typicalHours":string,"eventDate":string|null,"seasonalNote":string|null,"url":"https://www.pinecrestgardens.org/Events-directory"}]`,
   },
   {
     key: "arts-frost",
