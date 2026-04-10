@@ -83,6 +83,7 @@ const styles = `
   .card.col-frost    { border-left-color: #00b5e2; }
   .card.col-marlins  { border-left-color: #00a3e0; }
   .card.col-pottery     { border-left-color: #b45309; }
+  .card.col-fifafest     { border-left-color: #c8a000; }
   .card.col-mosscenter   { border-left-color: #7c3aed; }
   .card.col-pirate       { border-left-color: #1e3a5f; }
   .card.col-skatebird    { border-left-color: #0ea5e9; }
@@ -153,6 +154,7 @@ const SOURCE_META = {
   birdbowl:  { col: "col-pink",     label: "🎳 Bird Bowl" },
   marlins:   { col: "col-marlins",  label: "⚾ Marlins" },
   "pottery-miami":   { col: "col-pottery",   label: "🏺 Pottery Studio" },
+  fifafest:          { col: "col-fifafest",   label: "⚽ FIFA Fan Festival" },
   mosscenter:        { col: "col-mosscenter", label: "🎨 Moss Center / AKI" },
   pirateaquatours:   { col: "col-pirate",    label: "🏴‍☠️ Pirate Cruise" },
   skatebird:         { col: "col-skatebird", label: "🛹 SkateBird Miami" },
@@ -227,6 +229,7 @@ const STATIC_VENUES = [
   { id: "tutifruti-falling-frut", name: "Tutifruti: Falling Frut Workshop @ Skatebird Miami", location: "Skatebird Miami (check miamiandbeaches.com for exact address)", description: "A movement and poetry workshop led by Tutifruti reimagining the skatepark as a space for guided physical practice and creative reflection. Participants move through the space, explore a falling clinic (without gear), observe their physical and emotional responses, then write poetry. Part of the O, Miami Poetry Festival. Ages 5+, parental supervision for younger kids.", setting: "outdoor", estimatedCost: "Free or low cost — check site", ageRange: "Ages 5+", ageMin: 5, ageMax: 17, emoji: "🛹", source: "tutifruti", typicalHours: "Friday April 17", seasonalNote: "Part of the O, Miami Poetry Festival — combining skateboarding, falling, and poetry!", eventDate: "Fri Apr 17, 2026", daysOpen: [5], url: "https://www.tutifruti-fl.org" },
   { id: "pottery-miami", name: "Pottery Studio Miami — Kids Classes", location: "164 NW 20th St, Miami, FL 33127 (Wynwood / Edgewater area)", description: "Daily pottery, hand-building, and painting classes for kids and families in a drop-in-friendly studio near Wynwood. No experience needed, no membership required. Classes run 2 hours with an instructor guiding every step. Kids take home a finished piece after firing (2–3 weeks). Mommy & Me (ages 3–5): $90 total for parent + child. Kids Ceramics (ages 6–10): $90/person (hand-building + 1 firing) or $130 with painting, glazing + 2 firings. Teens same pricing. Private family groups up to 20 people ($100/person, $500 min).", setting: "indoor", estimatedCost: "$90 total Mommy & Me (3–5) · $90/person kids (6–10) · $130 with painting", ageRange: "Ages 3+", ageMin: 3, ageMax: 17, emoji: "🏺", source: "pottery-miami", typicalHours: "Mon–Fri 12–10pm · Sat–Sun 10am–10pm · Classes every 2 hrs, book online", seasonalNote: null, eventDate: null, daysOpen: [0,1,2,3,4,5,6], url: "https://pottery-miami.com/kids-pottery-classes-in-miami" },
   { id: "aki-festival-2026", name: "AKI Family Arts Festival 2026 — All Kids Included", location: "Dennis C. Moss Cultural Arts Center · 9901 SW 186th St, Cutler Bay 33157", description: "The 20th annual All Kids Included (AKI) Family Arts Festival — a free, fully inclusive day of creativity and community for children of all abilities and their families. Features live music and theater performances, hands-on arts activities, a rock-climbing wall, outdoor games, and community resource tables. Full accessibility accommodations: Braille, sighted guides, audio description, sensory-inclusive programs, and shadow-interpreted theatre. Presented by Miami-Dade County Department of Cultural Affairs.", setting: "outdoor", estimatedCost: "Free", ageRange: "All ages", ageMin: 0, ageMax: 17, emoji: "🎨", source: "mosscenter", typicalHours: "Sat May 2 · 10am (check mosscenter.org for exact hours)", seasonalNote: "Fully sensory-inclusive and accessibility-forward — great for kids with and without disabilities.", eventDate: "Sat May 2, 2026", daysOpen: [6], url: "https://www.mosscenter.org/mc/eventDetail.page?id=379" },
+  { id: "fifa-fan-festival", name: "FIFA Fan Festival™ Miami — Bayfront Park", location: "Bayfront Park, 301 Biscayne Blvd, Downtown Miami", description: "The official FIFA World Cup 26™ Fan Festival — free and open to everyone, no match ticket needed. Set on Biscayne Bay at Bayfront Park, the festival features live match broadcasts on big screens, entertainment, cultural performances, food, games, and interactive fan experiences. Miami's 2026 World Cup matches are played nearby at Hard Rock Stadium. A once-in-a-generation event for soccer-loving families.", setting: "outdoor", estimatedCost: "Free entry", ageRange: "All ages", ageMin: 0, ageMax: 17, emoji: "🏆", source: "fifafest", typicalHours: "Jun 13 – Jul 5 · Daily hours TBA — check miamifwc26.com/fan-festival", seasonalNote: "Free! No match ticket needed. Miami hosts World Cup matches Jun–Jul 2026 — the Fan Festival is for everyone.", eventDate: "Jun 13 – Jul 5, 2026", daysOpen: [0,1,2,3,4,5,6], url: "https://miamifwc26.com/fan-festival/" },
   // Coral Gables City Events
   { id: "cg-parents-night-out", name: "Parents Night Out", location: "Coral Gables Country Club, Coral Gables", description: "Drop the kids off for a supervised evening of activities at the Country Club while you enjoy a night out. Organized by the City of Coral Gables Recreation department.", setting: "indoor", estimatedCost: "Check site for registration fee", ageRange: "Kids (check age range)", ageMin: 4, ageMax: 12, emoji: "🌙", source: "coralgables", typicalHours: "Evening — check site for exact time", seasonalNote: null, eventDate: "Fri Apr 17, 2026", daysOpen: [5], url: "https://www.coralgables.com/events/parents-night-out" },
   { id: "cg-plogging", name: "Plogging at Chapman/Matheson", location: "Chapman Field / Matheson Hammock, Coral Gables area", description: "Plogging = jogging + picking up litter! Join Keep Coral Gables Beautiful for an active, eco-friendly morning run/walk while cleaning up the park. Great for active families and kids who love the outdoors.", setting: "outdoor", estimatedCost: "Free", ageRange: "All ages", ageMin: 0, ageMax: 17, emoji: "🏃", source: "coralgables", typicalHours: "8:30am", seasonalNote: null, eventDate: "Sat Apr 18, 2026", daysOpen: [6], url: "https://www.coralgables.com/events/plogging-chapman" },
@@ -364,7 +367,7 @@ const LIVE_SOURCES = [
     key: "pinecrest",
     label: "🌿 Pinecrest Gardens",
     prompt: (dateCtx) =>
-      `Search pinecrestgardens.org/Events-directory for current upcoming children's and family events. ${dateCtx} Return up to 3 relevant upcoming events as a JSON array only:\n[{"name":string,"location":string,"description":string,"setting":"indoor"|"outdoor","estimatedCost":string,"ageRange":string,"emoji":string,"typicalHours":string,"eventDate":string|null,"seasonalNote":string|null,"url":string|null}]`,
+      `Search pinecrestgardens.org/Events-directory for special upcoming children's and family EVENTS. ${dateCtx} Only return ticketed or scheduled special events — do NOT return permanent daily attractions like the petting zoo, butterfly garden, splash pad, playgrounds, or general admission. Only return events that are date-specific and would not be there on a random day. Return up to 3 as a JSON array only:\n[{"name":string,"location":string,"description":string,"setting":"indoor"|"outdoor","estimatedCost":string,"ageRange":string,"emoji":string,"typicalHours":string,"eventDate":string|null,"seasonalNote":string|null,"url":string|null}]`,
   },
   {
     key: "frost",
@@ -395,7 +398,7 @@ const LIVE_SOURCES = [
     key: "intermiami",
     label: "⚽ Inter Miami Home Games",
     prompt: (dateCtx) =>
-      `Search intermiamicf.com/schedule/matches or intermiamicf.com/tickets/single for upcoming Inter Miami CF HOME games at Nu Stadium at Miami Freedom Park. ${dateCtx} Tickets from $54 official. Note this is the inaugural 2026 season at Nu Stadium. Return up to 3 upcoming home games as a JSON array only:\n[{"name":string,"location":"Nu Stadium, Miami Freedom Park, NW 37th Ave, Miami","description":string,"setting":"outdoor","estimatedCost":"From $54 (official)","ageRange":"All ages","ageMin":0,"ageMax":17,"emoji":"⚽","typicalHours":string,"eventDate":string|null,"seasonalNote":string|null,"url":"https://www.intermiamicf.com/tickets/single"}]`,
+      `Search intermiamicf.com/schedule/matches for Inter Miami CF HOME games at Nu Stadium. ${dateCtx} Only return a game if it falls ON the selected date. If no home game is on that exact date, return an empty array []. Return at most 1 result as a JSON array only:\n[{"name":string,"location":"Nu Stadium, Miami Freedom Park, NW 37th Ave, Miami","description":string,"setting":"outdoor","estimatedCost":"From $54 (official)","ageRange":"All ages","ageMin":0,"ageMax":17,"emoji":"⚽","typicalHours":string,"eventDate":string|null,"seasonalNote":string|null,"url":"https://www.intermiamicf.com/tickets/single"}]`,
   },
   {
     key: "berryfarm",
@@ -497,7 +500,7 @@ function getDateInfo(dateStr) {
 }
 
 async function callClaude(prompt) {
-  const res = await fetch("/api/messages", {
+  const res = await fetch("https://api.anthropic.com/v1/messages", {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({
@@ -520,7 +523,7 @@ async function fetchGeneralAI(dateInfo) {
     : "No specific date.";
   const prompt = "You are a Miami family activity expert. Suggest 4 REAL specific kid-friendly activities in Miami for families. " + dateText + " Do NOT include Zoo Miami, Frost Science, Fairchild, Bird Bowl, Puttshack, Superblue, Pinecrest Gardens, Miami Marlins, UM Baseball, Inter Miami CF, The Berry Farm, or Tinez Farms — those are covered separately. Return JSON array only, include pricing and age info on the cards:\n[{\"name\":string,\"location\":string,\"description\":string,\"setting\":\"indoor\"|\"outdoor\",\"estimatedCost\":string,\"ageRange\":string,\"emoji\":string,\"typicalHours\":string,\"eventDate\":null,\"seasonalNote\":string|null,\"url\":string|null}]";
 
-  const res = await fetch("/api/messages", {
+  const res = await fetch("https://api.anthropic.com/v1/messages", {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({
@@ -794,6 +797,3 @@ function ActivityCard({ activity, delay = 0 }) {
     </div>
   );
 }
-
-import { createRoot } from "react-dom/client";
-createRoot(document.getElementById("root")).render(<App />);
