@@ -804,3 +804,6 @@ function ActivityCard({ activity, delay = 0 }) {
     </div>
   );
 }
+
+import { createRoot } from "react-dom/client";
+createRoot(document.getElementById("root")).render(<App />);
