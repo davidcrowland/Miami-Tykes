@@ -31,6 +31,14 @@ const styles = `
   .search-btn:hover { box-shadow: 0 0 30px rgba(255,45,120,0.6); transform: translateY(-1px); }
   .search-btn:active { transform: scale(0.99); }
   .search-btn:disabled { background: rgba(255,255,255,0.1); color: rgba(255,255,255,0.3); cursor: not-allowed; box-shadow: none; }
+  .free-toggle { display: flex; align-items: center; gap: 8px; margin-top: 10px; cursor: pointer; width: fit-content; }
+  .free-toggle input { display: none; }
+  .free-toggle-track { width: 36px; height: 20px; border-radius: 10px; background: rgba(255,255,255,0.1); border: 1px solid rgba(0,230,230,0.25); transition: all 0.2s; position: relative; flex-shrink: 0; }
+  .free-toggle-track.on { background: rgba(0,230,230,0.2); border-color: #00e6e6; box-shadow: 0 0 8px rgba(0,230,230,0.3); }
+  .free-toggle-thumb { position: absolute; top: 2px; left: 2px; width: 14px; height: 14px; border-radius: 50%; background: rgba(255,255,255,0.3); transition: all 0.2s; }
+  .free-toggle-track.on .free-toggle-thumb { left: 18px; background: #00e6e6; }
+  .free-toggle-label { font-size: 12px; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; color: rgba(0,230,230,0.6); transition: color 0.2s; }
+  .free-toggle.active .free-toggle-label { color: #00e6e6; }
 
   .manage-btn-wrap { max-width: 720px; margin: 16px auto 0; padding: 0 24px; }
   .manage-btn { display: flex; align-items: center; gap: 8px; background: none; border: 1.5px dashed rgba(0,230,230,0.3); border-radius: 12px; padding: 10px 16px; font-family: 'Exo 2', sans-serif; font-size: 13px; font-weight: 600; color: rgba(0,230,230,0.5); cursor: pointer; transition: all 0.15s; width: 100%; }
@@ -562,7 +570,7 @@ async function fetchGeneralAI(dateInfo) {
   const dateText = dateInfo
     ? "Specific date: " + dateInfo.dateStr + " (" + dateInfo.dayName + ", " + dateInfo.season + " in Miami)."
     : "No specific date.";
-  const prompt = "You are a Miami family activity expert. Suggest 4 REAL specific kid-friendly activities in Miami for families. " + dateText + " Do NOT include Zoo Miami, Frost Science, Fairchild, Bird Bowl, Puttshack, Superblue, Pinecrest Gardens, Miami Marlins, UM Baseball, Inter Miami CF, The Berry Farm, or Tinez Farms — those are covered separately. Return JSON array only, include pricing and age info on the cards:\n[{\"name\":string,\"location\":string,\"description\":string,\"setting\":\"indoor\"|\"outdoor\",\"estimatedCost\":string,\"ageRange\":string,\"emoji\":string,\"typicalHours\":string,\"eventDate\":null,\"seasonalNote\":string|null,\"url\":string|null}]";
+  const prompt = "You are a Miami family activity expert. Suggest 4 REAL specific kid-friendly activities in Miami for families. " + dateText + " Do NOT include Zoo Miami, Frost Science, Fairchild, Bird Bowl, Puttshack, Superblue, Pinecrest Gardens, Miami Marlins, UM Baseball, Inter Miami CF, The Berry Farm, Tinez Farms, or Miami Seaquarium (ethical concerns) — those are excluded. Return JSON array only, include pricing and age info on the cards:\n[{\"name\":string,\"location\":string,\"description\":string,\"setting\":\"indoor\"|\"outdoor\",\"estimatedCost\":string,\"ageRange\":string,\"emoji\":string,\"typicalHours\":string,\"eventDate\":null,\"seasonalNote\":string|null,\"url\":string|null}]";
 
   const res = await fetch("/api/messages", {
     method: "POST",
@@ -681,6 +689,7 @@ const BLANK_FORM = { name: "", location: "", description: "", setting: "indoor",
 
 export default function App() {
   const [selectedDate, setSelectedDate] = useState("");
+  const [freeOnly, setFreeOnly] = useState(false);
   const [searched, setSearched] = useState(false);
 
   // Results state
@@ -710,7 +719,7 @@ export default function App() {
 
     // Build context string passed to every live search
     const dateCtx = dateInfo
-      ? "The visit date is " + dateInfo.dateStr + " (" + dateInfo.dayName + ", " + dateInfo.season + " in Miami). " + (dateInfo.isWeekend ? "It is a weekend." : "It is a weekday.") + " Only return events/activities that are actually open or scheduled on this exact date."
+      ? "The visit date is " + dateInfo.dateStr + " (" + dateInfo.dayName + ", " + dateInfo.season + " in Miami). " + (dateInfo.isWeekend ? "It is a weekend." : "It is a weekday.") + " Only return events/activities that are actually open or scheduled on this exact date. Do not suggest Miami Seaquarium."
       : "No specific date selected — return currently upcoming events.";
 
     // Fire all live source searches in parallel
@@ -779,6 +788,13 @@ export default function App() {
                 {dateInfo.isWeekend ? " · Weekend" : " · Weekday"}
               </div>
             )}
+            <div className={"free-toggle" + (freeOnly ? " active" : "")} onClick={() => setFreeOnly(p => !p)}>
+              <div className={"free-toggle-track" + (freeOnly ? " on" : "")}>
+                <div className="free-toggle-thumb" />
+              </div>
+              <span className="free-toggle-label">🎟️ Free events only</span>
+            </div>
+
             <button className="search-btn" onClick={handleSearch} disabled={isLoading || !selectedDate}>
               {isLoading ? "Searching all venues…" : !selectedDate ? "Pick a date first ↑" : "Find Activities →"}
             </button>
@@ -862,8 +878,9 @@ export default function App() {
           )}
 
           {(() => {
-            const datedStatic = staticResults.filter(a => a.eventDate || (a.daysOpen && a.daysOpen.length <= 2));
-            const alwaysStatic = staticResults.filter(a => !a.eventDate && (!a.daysOpen || a.daysOpen.length > 2));
+            const isFreeEntry = a => { const c = (a.estimatedCost || "").toLowerCase(); return c.includes("free") || c === "" || c === "0"; };
+            const datedStatic = staticResults.filter(a => (a.eventDate || (a.daysOpen && a.daysOpen.length <= 2)) && (!freeOnly || isFreeEntry(a)));
+            const alwaysStatic = staticResults.filter(a => !a.eventDate && (!a.daysOpen || a.daysOpen.length > 2) && (!freeOnly || isFreeEntry(a)));
             return (
               <>
                 {datedStatic.length > 0 && (
@@ -876,7 +893,7 @@ export default function App() {
                 {allLiveItems.length > 0 && (
                   <>
                     <div className="section-label">🔍 Live results</div>
-                    {allLiveItems.map((a, i) => <ActivityCard key={i} activity={a} delay={i * 50} />)}
+                    {allLiveItems.filter(a => !freeOnly || (a.estimatedCost || "").toLowerCase().includes("free")).map((a, i) => <ActivityCard key={i} activity={a} delay={i * 50} />)}
                   </>
                 )}
 
@@ -890,7 +907,7 @@ export default function App() {
                 {aiResults.length > 0 && (
                   <>
                     <div className="section-label">✨ More ideas</div>
-                    {aiResults.map((a, i) => <ActivityCard key={i} activity={a} delay={i * 50} />)}
+                    {aiResults.filter(a => !freeOnly || (a.estimatedCost || "").toLowerCase().includes("free")).map((a, i) => <ActivityCard key={i} activity={a} delay={i * 50} />)}
                   </>
                 )}
               </>
