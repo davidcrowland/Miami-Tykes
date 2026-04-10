@@ -771,7 +771,7 @@ export default function App() {
         <div className="hero">
           <div className="hero-palm2">🌴</div>
           <div className="hero-eyebrow">YOUR MIAMI FAMILY GUIDE</div>
-          <h1>MIAMI<br /><em>TYKES</em></h1>
+          <h1>305<br /><em>KIDS</em></h1>
           <p>Live searches across Miami's top family venues — every time you search.</p>
         </div>
 
