@@ -545,12 +545,14 @@ const COMING_UP = [
 ];
 
 function ComingUpCard() {
+  const [visibleCount, setVisibleCount] = useState(5);
   const today = new Date();
   today.setHours(0,0,0,0);
-  const upcoming = COMING_UP
+  const allUpcoming = COMING_UP
     .filter(e => new Date(e.date + "T00:00:00") >= today)
-    .sort((a,b) => a.date.localeCompare(b.date))
-    .slice(0, 5);
+    .sort((a,b) => a.date.localeCompare(b.date));
+  const upcoming = allUpcoming.slice(0, visibleCount);
+  const hasMore = visibleCount < allUpcoming.length;
 
   if (upcoming.length === 0) return null;
 
@@ -575,7 +577,7 @@ function ComingUpCard() {
         <div style={{display:"flex",alignItems:"center",gap:"10px",marginBottom:"16px"}}>
           <span style={{fontSize:"18px"}}>🗓️</span>
           <span style={{fontFamily:"'Abril Fatface',serif",fontSize:"17px",color:"#fff"}}>Coming Up in Miami</span>
-          <span style={{fontSize:"11px",color:"rgba(255,45,120,0.7)",fontWeight:700,letterSpacing:"0.1em",textTransform:"uppercase",marginLeft:"auto"}}>Next {upcoming.length} events</span>
+          <span style={{fontSize:"11px",color:"rgba(255,45,120,0.7)",fontWeight:700,letterSpacing:"0.1em",textTransform:"uppercase",marginLeft:"auto"}}>Next {upcoming.length} of {allUpcoming.length}</span>
         </div>
         <div style={{display:"flex",flexDirection:"column",gap:"2px"}}>
           {upcoming.map((e,i) => {
@@ -595,6 +597,11 @@ function ComingUpCard() {
             );
           })}
         </div>
+        {hasMore && (
+          <button onClick={() => setVisibleCount(c => c + 5)} style={{display:"block",width:"100%",marginTop:"12px",padding:"9px",background:"transparent",border:"1px solid rgba(255,45,120,0.25)",borderRadius:"10px",color:"rgba(255,45,120,0.7)",fontFamily:"'Exo 2',sans-serif",fontSize:"12px",fontWeight:700,letterSpacing:"0.08em",textTransform:"uppercase",cursor:"pointer",transition:"all 0.15s"}} onMouseEnter={e=>e.target.style.borderColor="#ff2d78"} onMouseLeave={e=>e.target.style.borderColor="rgba(255,45,120,0.25)"}>
+            Show 5 more ↓
+          </button>
+        )}
       </div>
     </div>
   );
@@ -607,6 +614,7 @@ const BLANK_FORM = { name: "", location: "", description: "", setting: "indoor",
 export default function App() {
   const [selectedDate, setSelectedDate] = useState("");
   const [freeOnly, setFreeOnly] = useState(false);
+  const [indoorOnly, setIndoorOnly] = useState(false);
   const [searched, setSearched] = useState(false);
 
   // Results state
@@ -705,11 +713,19 @@ export default function App() {
                 {dateInfo.isWeekend ? " · Weekend" : " · Weekday"}
               </div>
             )}
+            <div style={{display:"flex",gap:"16px",flexWrap:"wrap"}}>
             <div className={"free-toggle" + (freeOnly ? " active" : "")} onClick={() => setFreeOnly(p => !p)}>
               <div className={"free-toggle-track" + (freeOnly ? " on" : "")}>
                 <div className="free-toggle-thumb" />
               </div>
               <span className="free-toggle-label">🎟️ Free events only</span>
+            </div>
+            <div className={"free-toggle" + (indoorOnly ? " active" : "")} onClick={() => setIndoorOnly(p => !p)}>
+              <div className={"free-toggle-track" + (indoorOnly ? " on" : "")}>
+                <div className="free-toggle-thumb" />
+              </div>
+              <span className="free-toggle-label">🏠 Indoors only</span>
+            </div>
             </div>
 
             <button className="search-btn" onClick={handleSearch} disabled={isLoading || !selectedDate}>
@@ -796,8 +812,9 @@ export default function App() {
 
           {(() => {
             const isFreeEntry = a => { const c = (a.estimatedCost || "").toLowerCase(); return c.includes("free") || c === "" || c === "0"; };
-            const datedStatic = staticResults.filter(a => (a.eventDate || (a.daysOpen && a.daysOpen.length <= 2)) && (!freeOnly || isFreeEntry(a)));
-            const alwaysStatic = staticResults.filter(a => !a.eventDate && (!a.daysOpen || a.daysOpen.length > 2) && (!freeOnly || isFreeEntry(a)));
+            const passFilters = a => (!freeOnly || isFreeEntry(a)) && (!indoorOnly || a.setting === "indoor");
+            const datedStatic = staticResults.filter(a => (a.eventDate || (a.daysOpen && a.daysOpen.length <= 2)) && passFilters(a));
+            const alwaysStatic = staticResults.filter(a => !a.eventDate && (!a.daysOpen || a.daysOpen.length > 2) && passFilters(a));
             return (
               <>
                 {datedStatic.length > 0 && (
@@ -810,7 +827,7 @@ export default function App() {
                 {allLiveItems.length > 0 && (
                   <>
                     <div className="section-label">🔍 Live results</div>
-                    {allLiveItems.filter(a => !freeOnly || (a.estimatedCost || "").toLowerCase().includes("free")).map((a, i) => <ActivityCard key={i} activity={a} delay={i * 50} />)}
+                    {allLiveItems.filter(a => (!freeOnly || (a.estimatedCost||"").toLowerCase().includes("free")) && (!indoorOnly || a.setting==="indoor")).map((a, i) => <ActivityCard key={i} activity={a} delay={i * 50} />)}
                   </>
                 )}
 
@@ -824,7 +841,7 @@ export default function App() {
                 {aiResults.length > 0 && (
                   <>
                     <div className="section-label">✨ More ideas</div>
-                    {aiResults.filter(a => !freeOnly || (a.estimatedCost || "").toLowerCase().includes("free")).map((a, i) => <ActivityCard key={i} activity={a} delay={i * 50} />)}
+                    {aiResults.filter(a => (!freeOnly || (a.estimatedCost||"").toLowerCase().includes("free")) && (!indoorOnly || a.setting==="indoor")).map((a, i) => <ActivityCard key={i} activity={a} delay={i * 50} />)}
                   </>
                 )}
               </>
